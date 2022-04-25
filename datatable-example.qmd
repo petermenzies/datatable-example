@@ -1,0 +1,142 @@
+---
+title: "One cool thing: data.table"
+subtitle: "EDS 411B Week 5"
+author: "Allison Horst"
+date: 2022-04-27
+format: html
+execute:
+  message: false
+  warning: false
+---
+
+## Overview
+
+### What is `data.table`? 
+
+From [Introduction to data.table](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html) on CRAN: "`data.table` is an R package that provides an enhanced version of data.frames, which are the standard data structure for storing data in base R."
+
+### Why do you care? 
+
+While there are a number of reasons folks may choose to use `data.table` for reading, writing and wrangling data, the main one you might make the switch is because **it's fast**. 
+
+From Megan Stodel's blog post [*Three reasons I use data.table*](https://www.meganstodel.com/posts/data-table/): "`data.table` is fast. Not just compared to other options in R, but tools in other languages too. [This](https://h2oai.github.io/db-benchmark/) benchmarking of database-like tools from R, Python and Julia...shows `data.table` as substantially faster across a number of aggregation tests using datasets of varying sizes." 
+
+Check out that link to see updated comparisons across tools with 0.5, 5, and 50GB datasets!
+
+### So what's the deal? 
+
+- If your processing times are fine as-is, you may not benefit from switching over to `data.table`.
+
+- The syntax is different, but very manageable. 
+
+### An example: Tree mortality
+
+The `FTM_trees.csv` is one dataset from the [Fire Tree Mortality Database](https://www.fs.usda.gov/treesearch/pubs/60342), which contains information about the survival of trees after fires, along with data about other stressors that may impact survival. The file is 40.7MB -- so manageable with `dplyr`, but we'll compare processing times with `data.table` for fun. 
+
+We can use the [`tictoc`](https://cran.r-project.org/web/packages/tictoc/index.html) package to compare code.
+
+### Attach packages: 
+
+```{r}
+#| message: false
+#| warning: false
+
+library(data.table)
+library(tidyverse)
+library(tictoc)
+library(dtplyr)
+```
+
+### Compare reading files: 
+
+*Note:* the `tic()` and `toc()` lines here are only to return speeds - what's between them is the code being run to compare `dplyr` & `data.table`.
+ 
+```{r}
+tic()
+ftm_trees_df <- readr::read_csv("FTM_trees.csv")
+toc()       
+```
+
+```{r}
+tic()
+ftm_trees_dt <- data.table::fread("FTM_trees.csv")
+toc()
+```
+
+Let's check out the classes:
+```{r}
+class(ftm_trees_df)
+
+class(ftm_trees_dt)
+```
+
+### Example: compare filtering times
+
+```{r}
+tic()
+ponderosa <- ftm_trees_df %>% filter(Species_name == "ponderosa")
+toc()
+```
+
+```{r}
+tic()
+ponderosa <- ftm_trees_dt[Species_name == "ponderosa"]
+toc()
+```
+
+These are really similar - the difference in speed increases with increasing file size (but now you know how to test it...)
+
+### Pry `dplyr` from your cold dead hands? `dtplyr` FTW!
+
+"The goal of [`dtplyr`](https://dtplyr.tidyverse.org/) is to allow you to write `dplyr` code that is automatically translated to the equivalent, but usually much faster, `data.table` code."
+
+That means you get to keep coding like you're using `dplyr`, but it'll get translated to `data.table` for you. 
+
+First, make a "lazy" data frame: 
+
+```{r}
+lazy_trees <- lazy_dt(ftm_trees_df)
+```
+
+This is an interesting object: 
+
+```{r}
+class(lazy_trees)
+```
+
+Working with that object using `dplyr` verbs will return the code you'd need to do the same thing in `data.table`! 
+
+```{r}
+lazy_trees %>% 
+  filter(Species_name %in% c("ponderosa", "jeffreyi") & HT_m > 21) %>% 
+  select(Genus, Species_name, DBH_cm, HT_m) %>% 
+  group_by(Species_name) %>% 
+  summarize(mean_height = mean(HT_m, na.rm = TRUE),
+            mean_diameter = mean(DBH_cm, na.rm = TRUE))
+```
+
+Let's confirm this works.
+
+Using `dplyr` verbs: 
+
+```{r}
+ftm_trees_df %>% 
+  filter(Species_name %in% c("ponderosa", "jeffreyi") & HT_m > 21) %>% 
+  select(Genus, Species_name, DBH_cm, HT_m) %>% 
+  group_by(Species_name) %>% 
+  summarize(mean_height = mean(HT_m, na.rm = TRUE),
+            mean_diameter = mean(DBH_cm, na.rm = TRUE))
+```
+
+Using `data.table` syntax: 
+
+```{r}
+ftm_trees_dt[Species_name %in% c("ponderosa", "jeffreyi") & HT_m > 
+    21, .(Genus, Species_name, DBH_cm, HT_m)][, .(mean_height = mean(HT_m, 
+    na.rm = TRUE), mean_diameter = mean(DBH_cm, na.rm = TRUE)), 
+    keyby = .(Species_name)]
+```
+
+So here's just a little push to not be afraid of `data.table`, especially if you're using really large datasets that might be taking a bit to load / wrangle (e.g. in Shiny apps). The syntax isn't bad out-of-the-box, but as an entryway you can also have `dtplyr` help you out. 
+
+## End
