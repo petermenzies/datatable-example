@@ -137,6 +137,19 @@ ftm_trees_dt[Species_name %in% c("ponderosa", "jeffreyi") & HT_m >
     keyby = .(Species_name)]
 ```
 
+But also, just USE data table behind the scenes by calling the output w/ `as_tsibble()`:
+
+```{r}
+ftm_trees_df %>% 
+  filter(Species_name %in% c("ponderosa", "jeffreyi") & HT_m > 21) %>% 
+  select(Genus, Species_name, DBH_cm, HT_m) %>% 
+  group_by(Species_name) %>% 
+  summarize(mean_height = mean(HT_m, na.rm = TRUE),
+            mean_diameter = mean(DBH_cm, na.rm = TRUE)) %>% 
+  as_tibble()
+```
+
+
 So here's just a little push to not be afraid of `data.table`, especially if you're using really large datasets that might be taking a bit to load / wrangle (e.g. in Shiny apps). The syntax isn't bad out-of-the-box, but as an entryway you can also have `dtplyr` help you out. 
 
 ## End
