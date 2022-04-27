@@ -148,7 +148,7 @@
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ftm_trees_df <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"FTM_trees.csv"</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">toc</span>()       </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-stdout">
-<pre><code>0.98 sec elapsed</code></pre>
+<pre><code>1.015 sec elapsed</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -156,7 +156,7 @@
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ftm_trees_dt <span class="ot">&lt;-</span> data.table<span class="sc">::</span><span class="fu">fread</span>(<span class="st">"FTM_trees.csv"</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-stdout">
-<pre><code>0.561 sec elapsed</code></pre>
+<pre><code>0.557 sec elapsed</code></pre>
 </div>
 </div>
 <p>Let’s check out the classes: ::: {.cell}</p>
@@ -177,7 +177,7 @@
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ponderosa <span class="ot">&lt;-</span> ftm_trees_df <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Species_name <span class="sc">==</span> <span class="st">"ponderosa"</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-stdout">
-<pre><code>0.101 sec elapsed</code></pre>
+<pre><code>0.104 sec elapsed</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -185,7 +185,7 @@
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ponderosa <span class="ot">&lt;-</span> ftm_trees_dt[Species_name <span class="sc">==</span> <span class="st">"ponderosa"</span>]</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-stdout">
-<pre><code>0.111 sec elapsed</code></pre>
+<pre><code>0.114 sec elapsed</code></pre>
 </div>
 </div>
 <p>These are really similar - the difference in speed increases with increasing file size (but now you know how to test it…)</p>
