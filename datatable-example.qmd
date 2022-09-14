@@ -13,7 +13,7 @@ execute:
 
 ### What is `data.table`? 
 
-From [Introduction to data.table](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html) on CRAN: "`data.table` is an R package that provides an enhanced version of data.frames, which are the standard data structure for storing data in base R."
+From [Introduction to data.table](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html) on CRAN: "`data.table` is an R package that provides an enhanced version of data.frames, which are the standard data structure for storing data in base R." 
 
 ### Why do you care? 
 
